@@ -2,6 +2,7 @@ from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDL
 from sdl2 import SDLK_a, SDL_Event
 
 import game_world
+import game_framework
 
 # state event check
 # ( state event type, event value )
@@ -29,6 +30,21 @@ def space_down(e):
 def IDLE_return(e):
     return e[0] == 'NONE'
 
+
+PIXEL_PER_METER= (10.0/0.3)
+RUN_SPEED_KMPH = 20.0
+RUN_SPEED_MPM = (RUN_SPEED_KMPH*1000.0/60.0)
+RUN_SPEED_MPS = (RUN_SPEED_MPM/60.0)
+RUN_SPEED_PPS = (RUN_SPEED_MPS* PIXEL_PER_METER)
+# Boy Action Speed
+# fill here
+TIME_PER_ACTION = 1
+ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
+FRAMES_PER_ACTION = 8
+
+
+
+
 class Idle:
     @staticmethod
     def enter(boy, e):
@@ -44,11 +60,12 @@ class Idle:
 
     @staticmethod
     def do(boy):
-        boy.frame = (boy.frame + 1) % 11
+        boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
+                     * game_framework.frame_time) % 11
 
     @staticmethod
     def draw(boy):
-        boy.image.clip_draw(boy.frame * 500, 0 * 348, 500, 348, boy.x, boy.y)
+        boy.image.clip_draw(int(boy.frame) * 500, 0 * 348, 500, 348, boy.x, boy.y)
 
 class Attack_up:
     @staticmethod
@@ -64,7 +81,8 @@ class Attack_up:
 
     @staticmethod
     def do(boy):
-        boy.frame = (boy.frame + 1) % 11
+        boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
+                     * game_framework.frame_time) % 11
         if boy.frame == 0:
             print('end')
             boy.state_machine.handle_event(('NONE', 0))
@@ -72,7 +90,7 @@ class Attack_up:
 
     @staticmethod
     def draw(boy):
-        boy.image_attack_up.clip_draw(boy.frame * 500, 0 * 348, 500, 348, boy.x, boy.y)
+        boy.image_attack_up.clip_draw(int(boy.frame) * 500, 0 * 348, 500, 348, boy.x, boy.y)
 
 
 
