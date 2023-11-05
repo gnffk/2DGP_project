@@ -1,5 +1,5 @@
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
-from sdl2 import SDLK_a, SDL_Event
+from sdl2 import SDLK_a, SDL_Event, SDLK_s
 
 import game_world
 import game_framework
@@ -9,8 +9,9 @@ import game_framework
 
 def attack_up(e):
     return e[0] == 'INPUT' and  e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a
-def attack_up_return(e):
-    return e[0] == 'INPUT' and  e[1].type == SDL_KEYUP and e[1].key == SDLK_a
+
+def attack_middle(e):
+    return e[0] == 'INPUT' and  e[1].type == SDL_KEYDOWN and e[1].key == SDLK_s
 
 def right_down(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
@@ -93,6 +94,32 @@ class Attack_up:
     def draw(boy):
         boy.image_attack_up.clip_draw(int(boy.frame) * 500, 0 * 348, 500, 348, boy.x, boy.y)
 
+class Attack_middle:
+    @staticmethod
+    def enter(boy, e):
+        boy.frame = 0
+        print(e)
+        pass
+
+    @staticmethod
+    def exit(boy, e):
+        print(boy.frame)
+        pass
+
+    @staticmethod
+    def do(boy):
+        boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
+                     * game_framework.frame_time) % 11
+        print(boy.frame)
+        if boy.frame >=10.8:
+            print('end')
+            boy.state_machine.handle_event(('NONE', 0))
+        pass
+
+    @staticmethod
+    def draw(boy):
+        boy.image_attack_middle.clip_draw(int(boy.frame) * 500, 0 * 348, 500, 348, boy.x, boy.y)
+
 class Run:
     @staticmethod
     def enter(boy, e):
@@ -122,9 +149,11 @@ class StateMachine:
         self.boy = boy
         self.cur_state = Idle
         self.transitions = {
-            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Idle, attack_up: Attack_up},
+            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Idle,
+                   attack_up: Attack_up,attack_middle: Attack_middle},
             Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Run},
-            Attack_up: {IDLE_return:Idle}
+            Attack_up: {IDLE_return:Idle},
+            Attack_middle: {IDLE_return: Idle}
         }
 
     def start(self):
@@ -153,6 +182,7 @@ class Boy:
         self.dir = 0
         self.image = load_image('Idle.png')
         self.image_attack_up = load_image('attack_up.png')
+        self.image_attack_middle = load_image('attack_middle.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
