@@ -7,6 +7,6 @@ import play_mode as start_mode
 #import item_mode as start_mode
 
 
-open_canvas()
+open_canvas(1600,800)
 game_framework.run(start_mode)
 close_canvas()

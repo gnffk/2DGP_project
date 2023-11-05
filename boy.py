@@ -40,7 +40,7 @@ RUN_SPEED_PPS = (RUN_SPEED_MPS* PIXEL_PER_METER)
 # fill here
 TIME_PER_ACTION = 1
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
-FRAMES_PER_ACTION = 8
+FRAMES_PER_ACTION = 11
 
 
 
@@ -83,7 +83,8 @@ class Attack_up:
     def do(boy):
         boy.frame = (boy.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                      * game_framework.frame_time) % 11
-        if boy.frame == 0:
+        print(boy.frame)
+        if boy.frame >=10.8:
             print('end')
             boy.state_machine.handle_event(('NONE', 0))
         pass
@@ -91,8 +92,6 @@ class Attack_up:
     @staticmethod
     def draw(boy):
         boy.image_attack_up.clip_draw(int(boy.frame) * 500, 0 * 348, 500, 348, boy.x, boy.y)
-
-
 
 class Run:
     @staticmethod
