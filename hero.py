@@ -1,6 +1,6 @@
 
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, draw_rectangle
-
+from score import Score
 from sdl2 import SDLK_a, SDL_Event, SDLK_s
 
 import game_world
@@ -67,6 +67,7 @@ class Attack_up:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
+
         print(e)
         pass
 
@@ -79,6 +80,10 @@ class Attack_up:
     def do(hero):
         hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                      * game_framework.frame_time) % 11
+        if hero.frame<=5.5:
+            hero.weapon_x +=  RUN_SPEED_PPS * game_framework.frame_time/2
+        elif hero.frame >5.5:
+            hero.weapon_x -= RUN_SPEED_PPS * game_framework.frame_time/2
         #print(hero.frame)
         if hero.frame >=10.9:
             print('end')
@@ -106,6 +111,12 @@ class Attack_middle:
     def do(hero):
         hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                      * game_framework.frame_time) % 11
+        if hero.frame<=5.5:
+            hero.weapon_x +=  RUN_SPEED_PPS * game_framework.frame_time/2
+            hero.weapon_y -= RUN_SPEED_PPS * game_framework.frame_time / 2
+        elif hero.frame >5.5:
+            hero.weapon_x -= RUN_SPEED_PPS * game_framework.frame_time/2
+            hero.weapon_y += RUN_SPEED_PPS * game_framework.frame_time / 2
         print(hero.frame)
         if hero.frame >=10.8:
             print('end')
@@ -134,6 +145,7 @@ class Run:
         hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                       * game_framework.frame_time) % 11
         hero.x += hero.dir * RUN_SPEED_PPS * game_framework.frame_time
+        hero.weapon_x += hero.dir * RUN_SPEED_PPS * game_framework.frame_time
         if hero.frame >=10.8:
             print('end')
             hero.state_machine.handle_event(('NONE', 0))
@@ -177,6 +189,7 @@ class StateMachine:
 class Hero:
     def __init__(self):
         self.x, self.y = 600, 150
+        self.weapon_x,self.weapon_y = 680, 230
         self.frame = 0
         self.action = 0
         self.face_dir = 1
@@ -189,15 +202,35 @@ class Hero:
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
+
+        self.score_state = False
+        self.score = load_image('resource/score.png')
+        self.score_timer = 0
+        self.score_duration = 2.0
+
     def update(self):
         self.state_machine.update()
-
+        if self.score_state:
+            self.score_timer += game_framework.frame_time
+            if self.score_timer >= self.score_duration:
+                self.score_state = False
+                self.score_timer = 0
     def handle_event(self, event):
         self.state_machine.handle_event(('INPUT', event))
 
     def draw(self):
+        if self.score_state:
+            self.score.clip_draw(0, 0, 217, 65, 685, 730, 217/2, 65/2)
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
-
+        draw_rectangle(*self.get_aa())
     def get_bb(self):
         return self.x - 120, self.y - 100, self.x-10 , self.y+90
+    def get_aa(self):
+            return self.weapon_x, self.weapon_y, self.weapon_x + 15, self.weapon_y + 15
+
+    def handle_collision(self, group, other):
+        if group == 'hero:ai':
+            self.score_state = True
+            print("찌름")
+            pass

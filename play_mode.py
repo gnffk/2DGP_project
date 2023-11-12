@@ -4,6 +4,7 @@ import game_framework
 import game_world
 from hero import Hero
 from ai import AI
+from score import Score
 
 # Game object class here
 
@@ -16,16 +17,17 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             game_framework.quit()
             pass
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_i:
-            pass
         else:
             hero.handle_event(event)
 
 
 def init():
     global running
-    global hero,ai
+    global hero,ai,score
     running = True
+
+    score = Score()
+    game_world.add_object(score, 0)
 
     hero = Hero()
     game_world.add_object(hero, 1)
@@ -34,9 +36,15 @@ def init():
     ai = AI()
     game_world.add_object(ai, 1)
 
+    game_world.add_collision_pair('ai:hero', ai, None)
+    game_world.add_collision_pair('ai:hero', None, hero)
+
+    game_world.add_collision_pair('hero:ai', hero, None)
+    game_world.add_collision_pair('hero:ai', None, ai)
+
 def update():
     game_world.update()
-
+    game_world.handle_collisions()
 def draw():
     clear_canvas()
     game_world.render()

@@ -177,6 +177,7 @@ class StateMachine:
 class AI:
     def __init__(self):
         self.x, self.y = 1000, 150
+        self.weapon_x, self.weapon_y = 1000, 150
         self.frame = 0
         self.action = 0
         self.face_dir = 1
@@ -200,4 +201,9 @@ class AI:
         draw_rectangle(*self.get_bb())
 
     def get_bb(self):
-        return self.x-10, self.y-90, self.x+120 , self.y+100
+        return self.x+30, self.y-90, self.x+120 , self.y+100
+    def get_aa(self):
+        return self.weapon_x , self.weapon_y, self.weapon_x+15 , self.weapon_y+15
+
+    def handle_collision(self, group, other):
+        pass
