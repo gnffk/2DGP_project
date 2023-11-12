@@ -15,20 +15,13 @@ def attack_up(e):
 def attack_middle(e):
     return e[0] == 'INPUT' and  e[1].type == SDL_KEYDOWN and e[1].key == SDLK_s
 
-def right_down(e):
+def right(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
 
-def right_up(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_RIGHT
-
-def left_down(e):
+def left(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
 
-def left_up(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYUP and e[1].key == SDLK_LEFT
 
-def space_down(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_SPACE
 
 def IDLE_return(e):
     return e[0] == 'NONE'
@@ -79,22 +72,23 @@ class Attack_up:
 
     @staticmethod
     def exit(hero, e):
-        print(hero.frame)
+        #print(hero.frame)
         pass
 
     @staticmethod
     def do(hero):
         hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                      * game_framework.frame_time) % 11
-        print(hero.frame)
-        if hero.frame >=10.8:
+        #print(hero.frame)
+        if hero.frame >=10.9:
             print('end')
             hero.state_machine.handle_event(('NONE', 0))
         pass
 
     @staticmethod
     def draw(hero):
-        hero.image.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
+        print(int(hero.frame))
+        hero.image_attack_up.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
 
 class Attack_middle:
     @staticmethod
@@ -120,15 +114,15 @@ class Attack_middle:
 
     @staticmethod
     def draw(hero):
-        hero.image.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
+        hero.image_attack_middle.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
 
 class Run:
     @staticmethod
     def enter(hero, e):
-        if right_down(e) or left_up(e):
-            hero.dir, hero.action, hero.face_dir = 1, 1, 1
-        elif left_down(e) or right_up(e):
-            hero.dir, hero.action, hero.face_dir = -1, 0, -1
+        if right(e):
+            hero.dir= 1
+        elif left(e):
+            hero.dir = -1
 
     @staticmethod
     def exit(hero, e):
@@ -137,22 +131,25 @@ class Run:
 
     @staticmethod
     def do(hero):
-        hero.frame = (hero.frame + 1) % 11
-        hero.x += hero.dir * 5
+        hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
+                      * game_framework.frame_time) % 11
+        hero.x += hero.dir * 0.5
+        if hero.frame >=10.8:
+            print('end')
+            hero.state_machine.handle_event(('NONE', 0))
         pass
 
     @staticmethod
     def draw(hero):
-        hero.image.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
+        hero.image_run.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
 
 class StateMachine:
     def __init__(self, hero):
         self.hero = hero
         self.cur_state = Idle
         self.transitions = {
-            Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, space_down: Idle,
-                   attack_up: Attack_up,attack_middle: Attack_middle},
-            Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle, space_down: Run},
+            Idle: {right:Run,left:Run, attack_up: Attack_up,attack_middle: Attack_middle},
+            Run:{IDLE_return:Idle},
             Attack_up: {IDLE_return:Idle},
             Attack_middle: {IDLE_return: Idle}
         }
@@ -184,6 +181,7 @@ class Hero:
         self.image = load_image('Idle.png')
         self.image_attack_up = load_image('attack_up.png')
         self.image_attack_middle = load_image('attack_middle.png')
+        self.image_run = load_image('run.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 

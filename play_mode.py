@@ -20,7 +20,7 @@ def handle_events():
         elif event.type == SDL_KEYDOWN and event.key == SDLK_i:
             pass
         else:
-            boy.handle_event(event)
+            hero.handle_event(event)
 
 
 def init():
