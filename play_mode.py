@@ -3,13 +3,12 @@ from pico2d import *
 import game_framework
 import game_world
 from hero import Hero
-
+from ai import AI
 
 # Game object class here
 
 def handle_events():
     global running
-    global attack_up
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -25,11 +24,15 @@ def handle_events():
 
 def init():
     global running
-    global hero
+    global hero,ai
     running = True
 
     hero = Hero()
     game_world.add_object(hero, 1)
+
+
+    ai = AI()
+    game_world.add_object(ai, 1)
 
 def update():
     game_world.update()
