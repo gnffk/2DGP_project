@@ -181,11 +181,11 @@ class AI:
         self.action = 0
         self.face_dir = 1
         self.dir = 0
-        self.image = load_image('Idle.png')
-        self.image_attack_up = load_image('attack_up.png')
-        self.image_attack_middle = load_image('attack_middle.png')
-        self.image_run = load_image('run.png')
-        self.image_run_back = load_image('run_back.png')
+        self.image = load_image('resource/Idle.png')
+        self.image_attack_up = load_image('resource/attack_up.png')
+        self.image_attack_middle = load_image('resource/attack_middle.png')
+        self.image_run = load_image('resource/run.png')
+        self.image_run_back = load_image('resource/run_back.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
