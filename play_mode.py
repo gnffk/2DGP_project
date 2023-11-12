@@ -2,7 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
-from boy import Boy
+from hero import Hero
 
 
 # Game object class here
@@ -25,11 +25,11 @@ def handle_events():
 
 def init():
     global running
-    global boy
+    global hero
     running = True
 
-    boy = Boy()
-    game_world.add_object(boy, 1)
+    hero = Hero()
+    game_world.add_object(hero, 1)
 
 def update():
     game_world.update()
@@ -45,9 +45,9 @@ def finish():
     pass
 
 def pause():
-    boy.wait_time = 10000000000000000000000000000000000000000000.0
+    hero.wait_time = 10000000000000000000000000000000000000000000.0
 
     pass
 def resume():
-    boy.wait_time = get_time()
+    hero.wait_time = get_time()
     pass
