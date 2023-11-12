@@ -1,7 +1,7 @@
 
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, draw_rectangle
 from score import Score
-from sdl2 import SDLK_a, SDL_Event, SDLK_s
+from sdl2 import SDLK_a, SDL_Event, SDLK_s, SDLK_d
 
 import game_world
 import game_framework
@@ -20,6 +20,9 @@ def right(e):
 
 def left(e):
     return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
+
+def defence(e):
+    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_d
 
 
 
@@ -126,7 +129,31 @@ class Attack_middle:
     @staticmethod
     def draw(hero):
         hero.image_attack_middle.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
+class Defence:
+    @staticmethod
+    def enter(hero, e):
+        hero.frame = 0
+        print(e)
+        pass
 
+    @staticmethod
+    def exit(hero, e):
+        print(hero.frame)
+        pass
+
+    @staticmethod
+    def do(hero):
+        hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
+                     * game_framework.frame_time) % 11
+
+        if hero.frame >=10.8:
+            print('end')
+            hero.state_machine.handle_event(('NONE', 0))
+        pass
+
+    @staticmethod
+    def draw(hero):
+        hero.image_defence.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
 class Run:
     @staticmethod
     def enter(hero, e):
@@ -158,15 +185,17 @@ class Run:
         elif hero.dir == -1:
             hero.image_run_back.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
 
+
 class StateMachine:
     def __init__(self, hero):
         self.hero = hero
         self.cur_state = Idle
         self.transitions = {
-            Idle: {right:Run,left:Run, attack_up: Attack_up,attack_middle: Attack_middle},
+            Idle: {right:Run,left:Run, attack_up: Attack_up,attack_middle: Attack_middle,defence:Defence},
             Run:{IDLE_return:Idle},
             Attack_up: {IDLE_return:Idle},
-            Attack_middle: {IDLE_return: Idle}
+            Attack_middle: {IDLE_return: Idle},
+            Defence:{IDLE_return: Idle}
         }
 
     def start(self):
@@ -199,6 +228,7 @@ class Hero:
         self.image_attack_middle = load_image('resource/attack_middle.png')
         self.image_run = load_image('resource/run.png')
         self.image_run_back = load_image('resource/run_back.png')
+        self.image_defence = load_image('resource/defence.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
 
