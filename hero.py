@@ -1,5 +1,5 @@
 
-from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT
+from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, draw_rectangle
 
 from sdl2 import SDLK_a, SDL_Event, SDLK_s
 
@@ -133,7 +133,7 @@ class Run:
     def do(hero):
         hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                       * game_framework.frame_time) % 11
-        hero.x += hero.dir * 0.5
+        hero.x += hero.dir * RUN_SPEED_PPS * game_framework.frame_time
         if hero.frame >=10.8:
             print('end')
             hero.state_machine.handle_event(('NONE', 0))
@@ -197,3 +197,7 @@ class Hero:
 
     def draw(self):
         self.state_machine.draw()
+        draw_rectangle(*self.get_bb())
+
+    def get_bb(self):
+        return self.x - 120, self.y - 100, self.x-10 , self.y+90
