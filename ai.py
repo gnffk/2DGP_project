@@ -59,7 +59,6 @@ class AI:
             self.weapon_x = self.x - 120
             self.weapon_y = self.y + 80
     def draw(self):
-        sx, sy = self.x - server.background.window_left, self.y - server.background.window_bottom
         image = AI.images[self.state][0]  # 가져온 이미지 리스트에서 첫 번째 이미지를 사용
         image.clip_draw(int(self.frame) * 500, 0 * 348, 500, 348, self.x, self.y)
         draw_rectangle(*self.get_bb())

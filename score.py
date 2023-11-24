@@ -16,7 +16,6 @@ class Score:
         self.image_num[8] = load_image("resource/score/score_number(8).png")
         self.image_num[9] = load_image("resource/score/score_number(9).png")
 
-
     def __init__(self):
         self.image_num = {}
         self.image = load_image('resource/score.png')
@@ -26,7 +25,7 @@ class Score:
         self.score_state_hero = False
         self.score_timer_hero = 0
         self.real_score_hero = 0
-        self.real_score_ai = 2
+        self.real_score_ai = 0
 
         self.score_state_ai = False
         self.score_timer_ai = 0
@@ -35,8 +34,6 @@ class Score:
         self.ai_score, self.hero_score = 0, 0
 
     def draw(self):
-
-
 
         self.image.clip_draw(0, 65, 800, 379, self.x, self.y, 400, 314 / 2)
         if self.score_state_hero:

@@ -22,13 +22,10 @@ def handle_events():
                 case pico2d.SDLK_ESCAPE:
                     game_framework.pop_mode()
                 case pico2d.SDLK_0:
-
                     game_framework.pop_mode()
                 case pico2d.SDLK_1:
-
                     game_framework.pop_mode()
                 case pico2d.SDLK_2:
-
                     game_framework.pop_mode()
 
 
@@ -50,7 +47,6 @@ def update():
         server.ai.x = 980
         server.ai.y = 150
         server.ai.weapon_x, server.ai.weapon_y = 850, 230
-
         game_framework.pop_mode()
     game_world.update()
 

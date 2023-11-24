@@ -1,23 +1,21 @@
 from pico2d import *
 import game_framework
+import game_world
 import play_mode
 import server
 import title_mode
-import game_world
 
 
 def init():
     global image, alpha
-    image = load_image('resource/mood/001.png')
+    image = load_image('resource/mood/002.png')
     alpha = 0.0  # 초기 투명도
-
 
 def update():
     global alpha
     alpha += 0.001  # 적절한 값으로 조절
     if alpha > 1.0:
         alpha = 1.0
-
 
 def finish():
     global image
@@ -26,7 +24,6 @@ def finish():
     game_world.clear()
     del image
 
-
 def handle_events():
     events = get_events()
     for event in events:
@@ -34,9 +31,9 @@ def handle_events():
             game_framework.quit()
         elif event.type == SDL_KEYDOWN:
             if event.key == SDLK_r:
-                # 객체 제거
-                # 모드 변경
+
                 game_framework.change_mode(title_mode)
+                pass
 
 
 def draw():

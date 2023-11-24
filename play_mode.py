@@ -1,8 +1,10 @@
 from pico2d import *
-import Lose_mood
+
+import Win_mood
 import game_framework
 import game_world
 import hero_score_mode
+import Lose_mood
 from hero import Hero
 from ai import AI
 from score import Score
@@ -28,8 +30,7 @@ def handle_events():
 
 
 def init():
-    global hero, ai, score, background, turn
-    turn = 1
+    global hero, ai, score, background
     server.score = Score()
     game_world.add_object(server.score, 1)
 
@@ -51,16 +52,14 @@ def init():
 
 def update():
     global turn
-    if turn == 1:
-        game_framework.push_mode(hero_score_mode)
-        turn = 0
-
     if server.score.score_state_hero or server.score.score_state_ai:
         game_framework.push_mode(hero_score_mode)
 
     if server.score.real_score_ai == 3:
-        delay(5.0)  # 5초 동안 대기
         game_framework.change_mode(Lose_mood)
+
+    if server.score.real_score_hero == 3:
+        game_framework.change_mode(Win_mood)
 
     game_world.update()
     game_world.handle_collisions()
@@ -74,3 +73,11 @@ def draw():
 
 def finish():
     game_world.clear()
+
+
+def pause():
+    pass
+
+
+def resume():
+    pass
