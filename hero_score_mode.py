@@ -13,7 +13,6 @@ from pannel import Pannel
 
 def handle_events():
     global running
-
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -40,19 +39,22 @@ def init():
     game_world.add_object(server.pannel, 3)
 
     score_mode_start_time = get_time()
+
+
 def update():
     global score_mode_start_time
     if get_time() - score_mode_start_time >= 4.0:
         score_mode_start_time = get_time()
         server.hero.x, server.hero.y = 600, 150
         server.hero.weapon_x, server.hero.weapon_y = 700, 230
-
         server.ai.x = 980
         server.ai.y = 150
         server.ai.weapon_x, server.ai.weapon_y = 850, 230
 
         game_framework.pop_mode()
     game_world.update()
+
+
 def draw():
     clear_canvas()
     game_world.render()
@@ -63,7 +65,10 @@ def finish():
     game_world.remove_object(server.pannel)
     pass
 
+
 def pause():
     pass
+
+
 def resume():
     pass

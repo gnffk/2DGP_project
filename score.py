@@ -26,7 +26,7 @@ class Score:
         self.score_state_hero = False
         self.score_timer_hero = 0
         self.real_score_hero = 0
-        self.real_score_ai = 0
+        self.real_score_ai = 2
 
         self.score_state_ai = False
         self.score_timer_ai = 0
@@ -60,15 +60,15 @@ class Score:
             self.image_num[1].clip_draw(0, 0, 1000, 1000, 900, 680, 50, 50)
 
 
-        if self.hero_score ==12 and self.ai_score != 12:
+        if self.hero_score ==11 and self.ai_score != 11:
             self.hero_score, self.ai_score = 0 , 0
             self.real_score_hero +=1
-        elif self.hero_score !=12 and self.ai_score == 12:
+        elif self.hero_score !=11 and self.ai_score == 11:
             self.hero_score, self.ai_score = 0, 0
             self.real_score_ai += 1
 
         self.image_num[self.real_score_hero % 10].clip_draw(0, 0, 1000, 1000, 780, 680, 20, 20)
-        self.image_num[self.real_score_ai % 10].clip_draw(0, 0, 1000, 1000, 810, 680, 20, 20)
+        self.image_num[self.real_score_ai % 10].clip_draw(0, 0, 1000, 1000, 830, 680, 20, 20)
         pass
 
     def update(self):
