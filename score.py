@@ -2,7 +2,7 @@ from pico2d import load_image
 import game_world
 import game_framework
 import hero_score_mode
-
+import server
 class Score:
     def image_load(self):
         self.image_num[0] = load_image("resource/score/score_number(0).png")
@@ -20,10 +20,13 @@ class Score:
     def __init__(self):
         self.image_num = {}
         self.image = load_image('resource/score.png')
+
         self.image_load()
         self.x, self.y = 800, 700
         self.score_state_hero = False
         self.score_timer_hero = 0
+        self.real_score_hero = 0
+        self.real_score_ai = 0
 
         self.score_state_ai = False
         self.score_timer_ai = 0
@@ -32,6 +35,8 @@ class Score:
         self.ai_score, self.hero_score = 0, 0
 
     def draw(self):
+
+
 
         self.image.clip_draw(0, 65, 800, 379, self.x, self.y, 400, 314 / 2)
         if self.score_state_hero:
@@ -54,6 +59,16 @@ class Score:
             self.image_num[self.ai_score % 10].clip_draw(0, 0, 1000, 1000, 950, 680, 50, 50)
             self.image_num[1].clip_draw(0, 0, 1000, 1000, 900, 680, 50, 50)
 
+
+        if self.hero_score ==12 and self.ai_score != 12:
+            self.hero_score, self.ai_score = 0 , 0
+            self.real_score_hero +=1
+        elif self.hero_score !=12 and self.ai_score == 12:
+            self.hero_score, self.ai_score = 0, 0
+            self.real_score_ai += 1
+
+        self.image_num[self.real_score_hero % 10].clip_draw(0, 0, 1000, 1000, 780, 680, 20, 20)
+        self.image_num[self.real_score_ai % 10].clip_draw(0, 0, 1000, 1000, 810, 680, 20, 20)
         pass
 
     def update(self):

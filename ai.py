@@ -227,7 +227,7 @@ class AI:
                 self.weapon_x -= RUN_SPEED_PPS * game_framework.frame_time / 2
                 pass
             elif self.frame > 5.5:
-                self.weapon_x += RUN_SPEED_PPS * game_framework.frame_time / 2
+                self.weapon_x += RUN_SPEED_PPS * game_framework.frame_time /2
                 pass
         if self.frame >= 10.9:
             self.frame = 0
@@ -248,7 +248,7 @@ class AI:
                 self.weapon_x -= RUN_SPEED_PPS * game_framework.frame_time / 2
                 pass
             elif self.frame > 5.5:
-                self.weapon_x += RUN_SPEED_PPS * game_framework.frame_time / 2
+                self.weapon_x += RUN_SPEED_PPS * game_framework.frame_time
                 pass
 
         if self.frame >= 10.9:
@@ -273,7 +273,7 @@ class AI:
         pass  # a6
     def handle_collision(self, group, other):
         if group == 'ai:hero':
-            if server.ai.state != 'defence': #defence 일때는 공격 추가 안됨
+            if server.hero.state != 'defence': #defence 일때는 공격 추가 안됨
                 server.score.score_state_ai = True
                 server.score.ai_score += 1
                 self.x = server.hero.x + 100

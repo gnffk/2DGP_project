@@ -265,6 +265,9 @@ class Hero:
         self.image_run = load_image('resource/run.png')
         self.image_run_back = load_image('resource/run_back.png')
         self.image_defence = load_image('resource/defence.png')
+        self.image_a = load_image('resource/cooldown/A_cooldown.png')
+        self.image_s = load_image('resource/cooldown/S_cooldown.png')
+        self.image_d = load_image('resource/cooldown/D_cooldown.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
         self.count = 0
@@ -295,6 +298,11 @@ class Hero:
         self.state_machine.update()
 
     def draw(self):
+        self.image_a.clip_draw(int(self.attack_up_cooldown) * 150, 0, 150, 150, 120,700,70,70)
+        self.image_s.clip_draw(int(self.attack_middle_cooldown)*150, 0, 150, 150, 200, 700,70,70)
+        self.image_d.clip_draw(int(self.defence_cooldown) * 150, 0, 150, 150, 280,700 ,70,70)
+
+
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
         draw_rectangle(*self.get_aa())
