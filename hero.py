@@ -1,11 +1,13 @@
 
 from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, draw_rectangle
+
+
 from score import Score
 from sdl2 import SDLK_a, SDL_Event, SDLK_s, SDLK_d
 
 import game_world
 import game_framework
-
+import server
 # state event check
 # ( state event type, event value )
 
@@ -31,7 +33,7 @@ def IDLE_return(e):
 
 
 PIXEL_PER_METER= (10.0/0.3)
-RUN_SPEED_KMPH = 20.0
+RUN_SPEED_KMPH = 30.0
 RUN_SPEED_MPM = (RUN_SPEED_KMPH*1000.0/60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM/60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS* PIXEL_PER_METER)
@@ -65,7 +67,6 @@ class Idle:
     @staticmethod
     def draw(hero):
         hero.image.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
-
 class Attack_up:
     @staticmethod
     def enter(hero, e):
@@ -97,7 +98,6 @@ class Attack_up:
     def draw(hero):
         print(int(hero.frame))
         hero.image_attack_up.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
-
 class Attack_middle:
     @staticmethod
     def enter(hero, e):
@@ -157,14 +157,12 @@ class Defence:
 class Run:
     @staticmethod
     def enter(hero, e):
-        if right(e):
-            hero.dir= 1
-        elif left(e):
+        if right(e) and not left(e):
+            hero.dir = 1
+        elif left(e) and not right(e):
             hero.dir = -1
-
     @staticmethod
     def exit(hero, e):
-
         pass
 
     @staticmethod
@@ -176,6 +174,10 @@ class Run:
         if hero.frame >=10.8:
             print('end')
             hero.state_machine.handle_event(('NONE', 0))
+
+        if hero.weapon_x>server.ai.x:
+            hero.x = server.ai.x-100
+            hero.weapon_x = server.ai.x
         pass
 
     @staticmethod
@@ -255,7 +257,7 @@ class Hero:
         draw_rectangle(*self.get_bb())
         draw_rectangle(*self.get_aa())
     def get_bb(self):
-        return self.x - 120, self.y - 100, self.x-10 , self.y+90
+        return self.x - 120, self.y - 100, self.x-30 , self.y+90
     def get_aa(self):
             return self.weapon_x, self.weapon_y, self.weapon_x + 15, self.weapon_y + 15
 

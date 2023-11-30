@@ -6,10 +6,11 @@ from hero import Hero
 from ai import AI
 from score import Score
 
+
+import server
 # Game object class here
 
 def handle_events():
-    global running
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -18,7 +19,7 @@ def handle_events():
             game_framework.quit()
             pass
         else:
-            hero.handle_event(event)
+            server.hero.handle_event(event)
 
 
 def init():
@@ -29,18 +30,18 @@ def init():
     score = Score()
     game_world.add_object(score, 0)
 
-    hero = Hero()
-    game_world.add_object(hero, 1)
+    server.hero = Hero()
+    game_world.add_object(server.hero, 1)
 
 
-    ai = AI()
-    game_world.add_object(ai, 1)
+    server.ai = AI()
+    game_world.add_object(server.ai, 1)
 
-    game_world.add_collision_pair('ai:hero', ai, None)
-    game_world.add_collision_pair('ai:hero', None, hero)
+    game_world.add_collision_pair('ai:hero', server.ai, None)
+    game_world.add_collision_pair('ai:hero', None, server.hero)
 
-    game_world.add_collision_pair('hero:ai', hero, None)
-    game_world.add_collision_pair('hero:ai', None, ai)
+    game_world.add_collision_pair('hero:ai', server.hero, None)
+    game_world.add_collision_pair('hero:ai', None, server.ai)
 
 def update():
     game_world.update()
@@ -56,7 +57,6 @@ def finish():
     pass
 
 def pause():
-    hero.wait_time = 10000000000000000000000000000000000000000000.0
 
     pass
 def resume():
