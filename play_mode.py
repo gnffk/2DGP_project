@@ -6,7 +6,7 @@ from hero import Hero
 from ai import AI
 from score import Score
 
-
+from background import FixedBackground as Background
 import server
 # Game object class here
 
@@ -29,6 +29,9 @@ def init():
 
     score = Score()
     game_world.add_object(score, 0)
+
+    server.background = Background()
+    game_world.add_object(server.background, 0)
 
     server.hero = Hero()
     game_world.add_object(server.hero, 1)
