@@ -1,34 +1,17 @@
+from pico2d import *
 
-from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, draw_rectangle
-
-from sdl2 import SDLK_a, SDL_Event, SDLK_s
-
-import game_world
+import random
+import math
 import game_framework
+import game_world
+from behavior_tree import BehaviorTree, Action, Sequence, Condition, Selector
+import play_mode
 
-# state event check
-# ( state event type, event value )
+import server
 
-def attack_up(e):
-    return e[0] == 'INPUT' and  e[1].type == SDL_KEYDOWN and e[1].key == SDLK_a
-
-def attack_middle(e):
-    return e[0] == 'INPUT' and  e[1].type == SDL_KEYDOWN and e[1].key == SDLK_s
-
-def right(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_RIGHT
-
-def left(e):
-    return e[0] == 'INPUT' and e[1].type == SDL_KEYDOWN and e[1].key == SDLK_LEFT
-
-
-
-def IDLE_return(e):
-    return e[0] == 'NONE'
-
-
+# A Run Speed
 PIXEL_PER_METER= (10.0/0.3)
-RUN_SPEED_KMPH = 20.0
+RUN_SPEED_KMPH = 30.0
 RUN_SPEED_MPM = (RUN_SPEED_KMPH*1000.0/60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM/60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS* PIXEL_PER_METER)
@@ -38,172 +21,90 @@ TIME_PER_ACTION = 1
 ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 11
 
+animation_names = ['attack_middle', 'attack_up','defence',
+                   'Idle','run','run_back','score']
 
 
-
-class Idle:
-    @staticmethod
-    def enter(AI, e):
-        AI.dir = 0
-        AI.frame = 0
-        AI.wait_time = get_time()
-        print(e)
-        pass
-
-    @staticmethod
-    def exit(AI, e):
-        pass
-
-    @staticmethod
-    def do(AI):
-        AI.frame = (AI.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
-                     * game_framework.frame_time) % 11
-
-    @staticmethod
-    def draw(AI):
-        AI.image.clip_draw(int(AI.frame) * 500, 0 * 348, 500, 348, AI.x, AI.y)
-
-class Attack_up:
-    @staticmethod
-    def enter(AI, e):
-        AI.frame = 0
-        print(e)
-        pass
-
-    @staticmethod
-    def exit(AI, e):
-        #print(hero.frame)
-        pass
-
-    @staticmethod
-    def do(AI):
-        AI.frame = (AI.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
-                     * game_framework.frame_time) % 11
-        #print(hero.frame)
-        if AI.frame >=10.9:
-            print('end')
-            AI.state_machine.handle_event(('NONE', 0))
-        pass
-
-    @staticmethod
-    def draw(AI):
-        print(int(AI.frame))
-        AI.image_attack_up.clip_draw(int(AI.frame) * 500, 0 * 348, 500, 348,AI.x, AI.y)
-
-class Attack_middle:
-    @staticmethod
-    def enter(AI, e):
-        AI.frame = 0
-        print(e)
-        pass
-
-    @staticmethod
-    def exit(AI, e):
-        print(AI.frame)
-        pass
-
-    @staticmethod
-    def do(AI):
-        AI.frame = (AI.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
-                     * game_framework.frame_time) % 11
-        print(AI.frame)
-        if AI.frame >=10.8:
-            print('end')
-            AI.state_machine.handle_event(('NONE', 0))
-        pass
-
-    @staticmethod
-    def draw(AI):
-        AI.image_attack_middle.clip_draw(int(AI.frame) * 500, 0 * 348, 500, 348, AI.x, AI.y)
-
-class Run:
-    @staticmethod
-    def enter(AI, e):
-        if right(e):
-            AI.dir= 1
-        elif left(e):
-            AI.dir = -1
-
-    @staticmethod
-    def exit(AI, e):
-
-        pass
-
-    @staticmethod
-    def do(AI):
-        AI.frame = (AI.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
-                      * game_framework.frame_time) % 11
-        AI.x += AI.dir * RUN_SPEED_PPS * game_framework.frame_time
-        if AI.frame >=10.8:
-            print('end')
-            AI.state_machine.handle_event(('NONE', 0))
-        pass
-
-    @staticmethod
-    def draw(AI):
-        if AI.dir == 1:
-            AI.image_run.clip_composite_draw(int(AI.frame) * 500, 0 * 348, 500, 348,AI.x, AI.y)
-        elif AI.dir == -1:
-            AI.image_run_back.clip_draw(int(AI.frame) * 500, 0 * 348, 500, 348, AI.x, AI.y)
-
-class StateMachine:
-    def __init__(self, AI):
-        self.AI = AI
-        self.cur_state = Idle
-        self.transitions = {
-            Idle: {right:Run,left:Run, attack_up: Attack_up,attack_middle: Attack_middle},
-            Run:{IDLE_return:Idle},
-            Attack_up: {IDLE_return:Idle},
-            Attack_middle: {IDLE_return: Idle}
-        }
-
-    def start(self):
-        self.cur_state.enter(self.AI, ('NONE', 0))
-
-    def update(self):
-        self.cur_state.do(self.AI)
-
-    def handle_event(self, e):
-        for check_event, next_state in self.transitions[self.cur_state].items():
-            if check_event(e):
-                self.cur_state.exit(self.AI, e)
-                self.cur_state = next_state
-                self.cur_state.enter(self.AI, e)
-                return True
-        return False
-
-    def draw(self):
-        self.cur_state.draw(self.AI)
 class AI:
+    images = None
+
+    def load_images(self):
+        if AI.images == None:
+            AI.images = {}
+            for name in animation_names:
+                AI.images[name] = [load_image("resource/" + name + ".png") ]
     def __init__(self):
-        self.x, self.y = 1000, 150
-        self.weapon_x, self.weapon_y = 1000, 150
+        self.x = 950
+        self.y = 150
+        self.weapon_x, self.weapon_y = 830, 230
+        self.size_x = 500
+        self.size_y = 348
+        self.load_images()
+        self.dir = 0.0      # radian 값으로 방향을 표시
+        self.speed = 0.0
         self.frame = 0
-        self.action = 0
-        self.face_dir = 1
-        self.dir = 0
-        self.image = load_image('resource/Idle.png')
-        self.image_attack_up = load_image('resource/attack_up.png')
-        self.image_attack_middle = load_image('resource/attack_middle.png')
-        self.image_run = load_image('resource/run.png')
-        self.image_run_back = load_image('resource/run_back.png')
-        self.state_machine = StateMachine(self)
-        self.state_machine.start()
+        self.state = 'Idle'
 
-    def update(self):
-        self.state_machine.update()
-
-    def handle_event(self, event):
-        self.state_machine.handle_event(('INPUT', event))
-
-    def draw(self):
-        self.state_machine.draw()
-        draw_rectangle(*self.get_bb())
+        self.tx, self.ty = 0, 0
+        self.build_behavior_tree()
 
     def get_bb(self):
-        return self.x+30, self.y-90, self.x+120 , self.y+100
+        return self.x+30 , self.y-100, self.x + 120 , self.y + 90 #충돌 박스 크기 x = 90 / y = 190
+
     def get_aa(self):
-        return self.weapon_x , self.weapon_y, self.weapon_x+15 , self.weapon_y+15
+        return self.weapon_x, self.weapon_y, self.weapon_x+ 14, self.weapon_y + 14
+
+    def update(self):
+        self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
+        self.bt.run()
+
+    def draw(self):
+        sx, sy = self.x - server.background.window_left, self.y - server.background.window_bottom
+        image = AI.images[self.state][0]  # 가져온 이미지 리스트에서 첫 번째 이미지를 사용
+
+        image.clip_draw(int(self.frame) * 500, 0 * 348, 500, 348, sx, sy)
+        draw_rectangle(*self.get_bb())
+        draw_rectangle(*self.get_aa())
+        if self.x- server.hero.x<100:
+            self.x = server.hero.x+100
+            self.weapon_x= self.x -120
+
+    def handle_event(self, event):
+        pass
 
     def handle_collision(self, group, other):
         pass
+
+    def set_target_location(self, x=None, y=None):
+        if not x or not y:
+            raise ValueError('Location should be given')
+        self.tx, self.ty = x, y
+        return BehaviorTree.SUCCESS
+
+    def distance_less_than(self, x1, y1, x2, y2, r):
+        distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
+        return distance2 < (PIXEL_PER_METER * r) ** 2
+
+    def move_slightly_to(self, tx, ty):
+
+        pass
+
+    def move_to(self, r=0.5):
+        self.state = 'Idle'
+        self.move_slightly_to(self.tx, self.ty)
+        if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.RUNNING
+
+    def set_random_location(self):
+        # select random location around boy
+        self.tx = 1000
+        self.ty = -200
+        return BehaviorTree.SUCCESS
+
+    def build_behavior_tree(self):
+        a1 = Action('Set random location', self.set_random_location)
+        a2 = Action('Move to', self.move_to)
+        root = SEQ_wander = Sequence('Wander', a1, a2)
+        self.bt = BehaviorTree(root)

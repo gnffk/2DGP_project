@@ -171,13 +171,14 @@ class Run:
                       * game_framework.frame_time) % 11
         hero.x += hero.dir * RUN_SPEED_PPS * game_framework.frame_time
         hero.weapon_x += hero.dir * RUN_SPEED_PPS * game_framework.frame_time
+        print("hero", hero.x)
+        print("ai", server.ai.x)
         if hero.frame >=10.8:
             print('end')
             hero.state_machine.handle_event(('NONE', 0))
 
-        if hero.weapon_x>server.ai.x:
-            hero.x = server.ai.x-100
-            hero.weapon_x = server.ai.x
+
+
         pass
 
     @staticmethod
@@ -220,7 +221,7 @@ class StateMachine:
 class Hero:
     def __init__(self):
         self.x, self.y = 600, 150
-        self.weapon_x,self.weapon_y = 680, 230
+        self.weapon_x,self.weapon_y = 700, 230
         self.frame = 0
         self.action = 0
         self.face_dir = 1
@@ -256,10 +257,11 @@ class Hero:
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
         draw_rectangle(*self.get_aa())
+
     def get_bb(self):
         return self.x - 120, self.y - 100, self.x-30 , self.y+90
     def get_aa(self):
-            return self.weapon_x, self.weapon_y, self.weapon_x + 15, self.weapon_y + 15
+        return self.weapon_x, self.weapon_y, self.weapon_x + 14, self.weapon_y + 14
 
     def handle_collision(self, group, other):
         if group == 'hero:ai':
