@@ -28,7 +28,7 @@ def init():
     running = True
 
     score = Score()
-    game_world.add_object(score, 0)
+    game_world.add_object(score, 1)
 
     server.background = Background()
     game_world.add_object(server.background, 0)
