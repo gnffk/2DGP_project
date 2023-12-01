@@ -3,3 +3,4 @@
 hero = None
 ai = None
 background = None
+score = None

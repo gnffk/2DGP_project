@@ -27,8 +27,8 @@ def init():
     global hero,ai,score
     running = True
 
-    score = Score()
-    game_world.add_object(score, 1)
+    server.score = Score()
+    game_world.add_object(server.score, 1)
 
     server.background = Background()
     game_world.add_object(server.background, 0)

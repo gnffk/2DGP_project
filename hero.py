@@ -236,24 +236,11 @@ class Hero:
         self.state_machine.start()
 
 
-        self.score_state = False
-        self.score = load_image('resource/score.png')
-        self.score_timer = 0
-        self.score_duration = 2.0
 
     def update(self):
         self.state_machine.update()
-        if self.score_state:
-            self.score_timer += game_framework.frame_time
-            if self.score_timer >= self.score_duration:
-                self.score_state = False
-                self.score_timer = 0
-    def handle_event(self, event):
-        self.state_machine.handle_event(('INPUT', event))
 
     def draw(self):
-        if self.score_state:
-            self.score.clip_draw(0, 0, 217, 65, 685, 730, 217/2, 65/2)
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
         draw_rectangle(*self.get_aa())
@@ -265,6 +252,7 @@ class Hero:
 
     def handle_collision(self, group, other):
         if group == 'hero:ai':
-            self.score_state = True
+            server.score.score_state = True
+            server.score.hero_score +=1
             print("찌름")
             pass
