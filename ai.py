@@ -33,6 +33,7 @@ class AI:
             AI.images = {}
             for name in animation_names:
                 AI.images[name] = [load_image("resource/" + name + ".png") ]
+
     def __init__(self):
         self.x = 950
         self.y = 150
@@ -104,7 +105,35 @@ class AI:
         return BehaviorTree.SUCCESS
 
     def build_behavior_tree(self):
-        a1 = Action('Set random location', self.set_random_location)
-        a2 = Action('Move to', self.move_to)
-        root = SEQ_wander = Sequence('Wander', a1, a2)
+        #a1 = Action('Set random location', self.set_random_location)
+        #a2 = Action('Move to', self.move_to)
+        #root = SEQ_wander = Sequence('Wander', a1, a2)
+        a1 = Action('앞으로가기', self.go_to)
+        c1 = Condition('만났냐?', self.meet_condition)
+        a2 = Action('뒤로가기', self.back_go_to)
+        c2 = Condition('AI 방어 쿨타임이 없어?', self.defence_action)
+        a3 = Action('방어하기', self.defence)
+        c3 = Condition('상대방이 공격중이야?', self.hero_attack_condition)
+        c4 = Condition('나의 공격 쿨타임이 하나라도 0인가?', self.ai_two_attack_condition)
+        c5 = Condition('미들공격 쿨타임 = 0, 상단공격 쿨타임이 != 0 인가?', self.middle_attack_condition)
+        a4 = Action('중간 공격', self.middle_attack)
+        c6 = Condition('미들공격 쿨타임 = 0, 상단공격 쿨타임이 = 0 인가?', self.high_attack_condition)
+        a5 = Action('상단 공격', self.high_attack)
+        #제일 왼쪽부터
+
+
+        SEQ_TO_GO= Sequence('앞으로 이동', c1, a1)
+        SEQ_BACK_GO_TO = Sequence('뒤로 이동', c2, a2)
+        SEQ_DEFENCE = Sequence('방어', c3, a3)
+        SEQ_ATTACK_MIDDLE = Sequence('중단 공격', c5, a4)
+        SEQ_ATTACK_HIGH = Sequence('상단공격', c6, a5)
+        SEL_HIGH_MIDDLE_ATTACK = Selector('HIGH_MIDDLE_ATTACK', SEQ_ATTACK_MIDDLE, SEQ_ATTACK_HIGH)
+        SEQ_TWO_ATTACK_MOTION = Sequence('공격2개', c4, SEL_HIGH_MIDDLE_ATTACK)
+        SEL_ATTACK_AND_DEFENCE = Selector('ATTACK_DEFENCE',  SEQ_DEFENCE, SEQ_TWO_ATTACK_MOTION)
+        SEL_BEHAVIOR_ATTACK_AND_DEFENCE = Selector('ATTACK_AND_DEFENCE',SEQ_BACK_GO_TO, SEL_ATTACK_AND_DEFENCE )
+        SEL_MEET_OR_NOT = Selector('MEET_OR_NOT', SEQ_TO_GO, SEL_BEHAVIOR_ATTACK_AND_DEFENCE)
+        SEL_DISTANCE_CLOSE_AND_FAR = Selector('DISTANCE_CLOSE_AND_FAR', SEL_MEET_OR_NOT, SEQ_TO_GO)
+
+
+        SEL_SCORE_EQUAL = Selector('SCORE_EQUAL',SEL_LOW_AND_HIGH, SEL_DISTANCE_CLOSE_AND_FAR)
         self.bt = BehaviorTree(root)

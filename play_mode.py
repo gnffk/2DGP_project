@@ -20,6 +20,7 @@ def handle_events():
             pass
         else:
             server.hero.handle_event(event)
+            pass
 
 
 def init():

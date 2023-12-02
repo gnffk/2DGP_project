@@ -52,7 +52,7 @@ class Idle:
         hero.dir = 0
         hero.frame = 0
         hero.wait_time = get_time()
-        print(e)
+        #print(e)
         pass
 
     @staticmethod
@@ -72,7 +72,7 @@ class Attack_up:
     def enter(hero, e):
         hero.frame = 0
 
-        print(e)
+        #(e)
         pass
 
     @staticmethod
@@ -96,18 +96,18 @@ class Attack_up:
 
     @staticmethod
     def draw(hero):
-        print(int(hero.frame))
+        #print(int(hero.frame))
         hero.image_attack_up.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
 class Attack_middle:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
-        print(e)
+        #print(e)
         pass
 
     @staticmethod
     def exit(hero, e):
-        print(hero.frame)
+        #print(hero.frame)
         pass
 
     @staticmethod
@@ -120,7 +120,7 @@ class Attack_middle:
         elif hero.frame >5.5:
             hero.weapon_x -= RUN_SPEED_PPS * game_framework.frame_time/2
             hero.weapon_y += RUN_SPEED_PPS * game_framework.frame_time / 2
-        print(hero.frame)
+        #print(hero.frame)
         if hero.frame >=10.8:
             print('end')
             hero.state_machine.handle_event(('NONE', 0))
@@ -164,21 +164,15 @@ class Run:
     @staticmethod
     def exit(hero, e):
         pass
-
     @staticmethod
     def do(hero):
         hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                       * game_framework.frame_time) % 11
         hero.x += hero.dir * RUN_SPEED_PPS * game_framework.frame_time
         hero.weapon_x += hero.dir * RUN_SPEED_PPS * game_framework.frame_time
-        print("hero", hero.x)
-        print("ai", server.ai.x)
         if hero.frame >=10.8:
             print('end')
             hero.state_machine.handle_event(('NONE', 0))
-
-
-
         pass
 
     @staticmethod
@@ -214,6 +208,7 @@ class StateMachine:
                 self.cur_state = next_state
                 self.cur_state.enter(self.hero, e)
                 return True
+
         return False
 
     def draw(self):
@@ -234,9 +229,10 @@ class Hero:
         self.image_defence = load_image('resource/defence.png')
         self.state_machine = StateMachine(self)
         self.state_machine.start()
+        self.count =0
 
-
-
+    def handle_event(self, event):
+        self.state_machine.handle_event(('INPUT', event))
     def update(self):
         self.state_machine.update()
 
@@ -252,7 +248,12 @@ class Hero:
 
     def handle_collision(self, group, other):
         if group == 'hero:ai':
-            server.score.score_state = True
-            server.score.hero_score +=1
+            server.score.score_state_hero = True
+            self.count+=1
+            print(self.count)
+            if self.count >=170:
+                server.score.hero_score += 1
+                self.count = 0
+
             print("찌름")
             pass
