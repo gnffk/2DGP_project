@@ -71,7 +71,7 @@ class Attack_up:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
-        attack_up_cooldown =5;
+        hero.set_attack_up_cooldown()
         #(e)
         pass
 
@@ -82,6 +82,7 @@ class Attack_up:
 
     @staticmethod
     def do(hero):
+
         hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                      * game_framework.frame_time) % 11
         if hero.frame<=5.5:
@@ -101,7 +102,7 @@ class Attack_up:
 class Attack_middle:
     @staticmethod
     def enter(hero, e):
-        attack_middle_cooldown =5;
+        hero.set_attack_middle_cooldown()
         hero.frame = 0
         #print(e)
         pass
@@ -134,17 +135,16 @@ class Defence:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
-        hero.defence_cooldown =5;
-        print(e)
+        hero.set_defence_cooldown()
         pass
 
     @staticmethod
     def exit(hero, e):
-        print(hero.frame)
         pass
 
     @staticmethod
     def do(hero):
+
         hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                      * game_framework.frame_time) % 11
 
@@ -211,6 +211,7 @@ class StateMachine:
                 self.cur_state.enter(self.hero, e)
                 return True
 
+
         return False
 
     def draw(self):
@@ -235,20 +236,25 @@ class Hero:
         self.attack_up_cooldown = 0
         self.attack_middle_cooldown = 0
         self.defence_cooldown = 0
+        self.attack_up_cooldown_duration = 2.0
+        self.attack_middle_cooldown_duration = 3.0
+        self.defence_cooldown_duration = 4.0
+
 
     def handle_event(self, event):
-        print(event)
+        if (
+                (self.attack_up_cooldown > 0 and event == 'attack_up') or
+                (self.attack_middle_cooldown > 0 and event == 'attack_middle') or
+                (self.defence_cooldown > 0 and event == 'defence')
+        ):
+            return
         self.state_machine.handle_event(('INPUT', event))
     def update(self):
-        if self.attack_up_cooldown > 0:
-            self.attack_up_cooldown -= game_framework.frame_time
-        if self.attack_middle_cooldown > 0:
-            self.attack_middle_cooldown -= game_framework.frame_time
-        if self.defence_cooldown > 0:
-            self.defence_cooldown -= game_framework.frame_time
-            return
-        self.state_machine.update()
+        self.attack_up_cooldown = max(0, self.attack_up_cooldown - game_framework.frame_time)
+        self.attack_middle_cooldown = max(0, self.attack_middle_cooldown - game_framework.frame_time)
+        self.defence_cooldown = max(0, self.defence_cooldown - game_framework.frame_time)
 
+        self.state_machine.update()
     def draw(self):
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
@@ -271,3 +277,11 @@ class Hero:
 
             print("찌름")
             pass
+    def set_attack_up_cooldown(self):
+        self.attack_up_cooldown = self.attack_up_cooldown_duration
+
+    def set_attack_middle_cooldown(self):
+        self.attack_middle_cooldown = self.attack_middle_cooldown_duration
+
+    def set_defence_cooldown(self):
+        self.defence_cooldown = self.defence_cooldown_duration
