@@ -47,7 +47,7 @@ class AI:
         self.state = 'Idle'
 
         self.tx, self.ty = 0, 0
-        self.build_behavior_tree()
+        # self.build_behavior_tree()
 
     def get_bb(self):
         return self.x+30 , self.y-100, self.x + 120 , self.y + 90 #충돌 박스 크기 x = 90 / y = 190
@@ -57,7 +57,7 @@ class AI:
 
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
-        self.bt.run()
+        # self.bt.run()
 
     def draw(self):
         sx, sy = self.x - server.background.window_left, self.y - server.background.window_bottom
@@ -104,36 +104,105 @@ class AI:
         self.ty = -200
         return BehaviorTree.SUCCESS
 
-    def build_behavior_tree(self):
-        #a1 = Action('Set random location', self.set_random_location)
-        #a2 = Action('Move to', self.move_to)
-        #root = SEQ_wander = Sequence('Wander', a1, a2)
-        a1 = Action('앞으로가기', self.go_to)
-        c1 = Condition('만났냐?', self.meet_condition)
-        a2 = Action('뒤로가기', self.back_go_to)
-        c2 = Condition('AI 방어 쿨타임이 없어?', self.defence_action)
-        a3 = Action('방어하기', self.defence)
-        c3 = Condition('상대방이 공격중이야?', self.hero_attack_condition)
-        c4 = Condition('나의 공격 쿨타임이 하나라도 0인가?', self.ai_two_attack_condition)
-        c5 = Condition('미들공격 쿨타임 = 0, 상단공격 쿨타임이 != 0 인가?', self.middle_attack_condition)
-        a4 = Action('중간 공격', self.middle_attack)
-        c6 = Condition('미들공격 쿨타임 = 0, 상단공격 쿨타임이 = 0 인가?', self.high_attack_condition)
-        a5 = Action('상단 공격', self.high_attack)
-        #제일 왼쪽부터
+    def handle_collision(self, group, other):
+        if group == 'ai:hero':
 
 
-        SEQ_TO_GO= Sequence('앞으로 이동', c1, a1)
-        SEQ_BACK_GO_TO = Sequence('뒤로 이동', c2, a2)
-        SEQ_DEFENCE = Sequence('방어', c3, a3)
-        SEQ_ATTACK_MIDDLE = Sequence('중단 공격', c5, a4)
-        SEQ_ATTACK_HIGH = Sequence('상단공격', c6, a5)
-        SEL_HIGH_MIDDLE_ATTACK = Selector('HIGH_MIDDLE_ATTACK', SEQ_ATTACK_MIDDLE, SEQ_ATTACK_HIGH)
-        SEQ_TWO_ATTACK_MOTION = Sequence('공격2개', c4, SEL_HIGH_MIDDLE_ATTACK)
-        SEL_ATTACK_AND_DEFENCE = Selector('ATTACK_DEFENCE',  SEQ_DEFENCE, SEQ_TWO_ATTACK_MOTION)
-        SEL_BEHAVIOR_ATTACK_AND_DEFENCE = Selector('ATTACK_AND_DEFENCE',SEQ_BACK_GO_TO, SEL_ATTACK_AND_DEFENCE )
-        SEL_MEET_OR_NOT = Selector('MEET_OR_NOT', SEQ_TO_GO, SEL_BEHAVIOR_ATTACK_AND_DEFENCE)
-        SEL_DISTANCE_CLOSE_AND_FAR = Selector('DISTANCE_CLOSE_AND_FAR', SEL_MEET_OR_NOT, SEQ_TO_GO)
+            print("찌름")
+            pass
 
-
-        SEL_SCORE_EQUAL = Selector('SCORE_EQUAL',SEL_LOW_AND_HIGH, SEL_DISTANCE_CLOSE_AND_FAR)
-        self.bt = BehaviorTree(root)
+    # def build_behavior_tree(self):
+    #     #a1 = Action('Set random location', self.set_random_location)
+    #     #a2 = Action('Move to', self.move_to)
+    #     #root = SEQ_wander = Sequence('Wander', a1, a2)
+    #     c1 = Condition('점수가 안똑같음?', self.score_not_equal_condition)
+    #     c2 = Condition('점수가 적음?', self.score_less_score_condition)
+    #     c3 = Condition('못만남?', self.score_not_meet_condition)
+    #     c4 = Condition('만남?',self.score_meet_condition )
+    #     c5 = Condition('방어 쿨타임 0이상인가?',self.ai_defecne_time_up_condition)
+    #     c6 = Condition('방어 쿨타임이 0인가',self.ai_defecne_time_zero_condition)
+    #     c7 = Condition('상대방이 공격중인가?', self.hero_attack_condition)
+    #     c8 = Condition('둘중에 하나라도 AI 공격쿨타임이 0인가?', self.ai_attack_time_zero_condition)
+    #     c9 = Condition('AI공격쿨타임이 하나만 0인가', self.ai_one_attack_time_zero_condition)
+    #     c10 = Condition('점수가 많음?', self.score_more_score_condition)
+    #     c11 = Condition('일정거리 안으로 왔는가?', self.distance_less_than)
+    #     c12= Condition('일정거리 밖에 있는가?', self.distance_more_than)
+    #     c13= Condition('점수가 더 많은가?', self.score_more_score_condition)
+    #     c14 = Condition('상대 공격 쿨타임이 0인가?', self.hero_attack_time_zero_condition)
+    #     c15 = Condition('상대 공격 쿨타임이 0이 아닌가?', self.hero_attack_time_zero_not_condition)
+    #     c16 = Condition('점수가 똑같은가?', self.score_equal_conditon)
+    #
+    #     a1 = Action('앞으로가기', self.front_Move) #앞으로 이동
+    #     a2 = Action('뒤로가기', self.back_Move)
+    #     a3 = Action('방어하기', self.defence)
+    #     a4 = Action('중단 공격하기', self.middle_attack)
+    #     a5 = Action('상단 공격하기', self.up_attack)
+    #     a6 = Action('IDLE', self.idle)
+    #
+    #
+    #     ##
+    #     SEQ_MIDDLE_ATTACK = Sequence('MIDDLE_ATTACK', c9, a4)
+    #     SEL_UP_ATTACK_MIDDLE_ATTACK = Selector('UP_ATTACK_MIDDLE_ATTACK', SEQ_MIDDLE_ATTACK, a5)
+    #     ##
+    #
+    #     ##
+    #     SEQ_TWO_ATTACK = Sequence('Two_Attack', c8, SEL_UP_ATTACK_MIDDLE_ATTACK)
+    #     SEQ_DEFENCE = Sequence('DEFENCE', c7, a3)
+    #     ##
+    #
+    #     ##
+    #     SEL_ATTACK_AND_DEFENCE = Selector('ATTACK_AND_DEFENCE', SEQ_DEFENCE, SEQ_TWO_ATTACK)
+    #     ##
+    #
+    #     ##
+    #     SEQ_BEHAVIOR = Sequence('BEHAVIOR', c6, SEL_ATTACK_AND_DEFENCE)
+    #     SEQ_BACK = Sequence('BACK', c5, a2)
+    #     ##
+    #
+    #     ##
+    #     SEL_BEHAVIOR_AND_BACK = Selector('BEHAVIOR_AND_BACK', SEQ_BACK, SEQ_BEHAVIOR)
+    #     ##
+    #     #*
+    #     SEQ_GO_MORE_SCORE = Sequence('GO_MORE_SCORE',c15,a1)
+    #     SEQ_BACK_MORE_SCORE = Sequence('BACK_MORE_SCORE',c14,a2)
+    #     #*
+    #     ##
+    #     SEQ_NOT_MEET = Sequence('NOT_MEET', c3, a1)
+    #     SEQ_MEET = Sequence('MEET', c4, SEL_BEHAVIOR_AND_BACK)
+    #     ##
+    #
+    #     #*
+    #     SEL_GO_AND_BACK = Selector('GO_AND_BACK', SEQ_GO_MORE_SCORE, SEQ_BACK_MORE_SCORE)
+    #     SEQ_NOT_MEET_SCORE_MORE = Sequence('NOT_MEET_SCORE_MORE', c3, SEL_GO_AND_BACK)
+    #     #*
+    #
+    #     ##
+    #     SEL_MEET_OR_NOT_MEET = Selector('MEET_OR_NOT_MEET',SEQ_NOT_MEET ,SEQ_MEET)
+    #     SEQ_DISTANCE_LESS = Sequence('Distance_less', c11, SEL_MEET_OR_NOT_MEET)
+    #     SEQ_DISTANCE_MORE = Sequence('Distance_more', c12, a1)
+    #     ##
+    #
+    #     #*
+    #     SEL_MEET_OR_NOT_MEET_SCORE_MORE = Selector('MEET_OR_NOT_MEET_SCORE_MORE', SEQ_NOT_MEET_SCORE_MORE, SEQ_MEET)
+    #     SEQ_DISTANCE_LESS_SCORE_MORE = Sequence('DISTANCE_MORE_SCORE_MORE', c11, SEL_MEET_OR_NOT_MEET_SCORE_MORE)
+    #     #*
+    #
+    #     ##
+    #     SEL_DISTANCE_LESS_AND_MORE = Selector('DISTANCE_LESS_AND_MORE', SEQ_DISTANCE_LESS, SEQ_DISTANCE_MORE)
+    #     SEQ_SCORE_LESS = Sequence('LESS_SCORE', c2, SEL_DISTANCE_LESS_AND_MORE)
+    #     ##
+    #
+    #     #*
+    #     SEL_DISTANCE_LESS_AND_MORE_SCORE_MORE = ('DISTANCE_LESS_AND_MORE(SCORE_MORE)', SEQ_DISTANCE_LESS_SCORE_MORE, a6)
+    #     SEQ_SCORE_MORE = Sequence('SCORE_MORE', c13, SEL_DISTANCE_LESS_AND_MORE_SCORE_MORE)
+    #     #*
+    #
+    #     #&
+    #     SEQ_EQUAL = Sequence('EQUAL', c16, SEL_DISTANCE_LESS_AND_MORE)
+    #     #&
+    #     ##
+    #     SEL_SCORE_MORE_AND_LESS = Selector('SCORE_MORE_AND_LESS', SEQ_SCORE_LESS, SEQ_SCORE_MORE)
+    #     SEQ_NOT_EQUAL = Sequence('NOT_EQUAL', c1, SEL_SCORE_MORE_AND_LESS)
+    #     ##
+    #     root =  SEL_MIDDLE_SCORE_OR_NOT = Selector('MIDDLE_SCORE_OR_NOT', SEQ_NOT_EQUAL, SEQ_EQUAL)
+    #     self.bt = BehaviorTree(root)

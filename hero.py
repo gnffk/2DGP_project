@@ -71,7 +71,7 @@ class Attack_up:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
-
+        attack_up_cooldown =5;
         #(e)
         pass
 
@@ -101,6 +101,7 @@ class Attack_up:
 class Attack_middle:
     @staticmethod
     def enter(hero, e):
+        attack_middle_cooldown =5;
         hero.frame = 0
         #print(e)
         pass
@@ -133,6 +134,7 @@ class Defence:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
+        hero.defence_cooldown =5;
         print(e)
         pass
 
@@ -230,10 +232,21 @@ class Hero:
         self.state_machine = StateMachine(self)
         self.state_machine.start()
         self.count =0
+        self.attack_up_cooldown = 0
+        self.attack_middle_cooldown = 0
+        self.defence_cooldown = 0
 
     def handle_event(self, event):
+        print(event)
         self.state_machine.handle_event(('INPUT', event))
     def update(self):
+        if self.attack_up_cooldown > 0:
+            self.attack_up_cooldown -= game_framework.frame_time
+        if self.attack_middle_cooldown > 0:
+            self.attack_middle_cooldown -= game_framework.frame_time
+        if self.defence_cooldown > 0:
+            self.defence_cooldown -= game_framework.frame_time
+            return
         self.state_machine.update()
 
     def draw(self):
@@ -249,11 +262,12 @@ class Hero:
     def handle_collision(self, group, other):
         if group == 'hero:ai':
             server.score.score_state_hero = True
-            self.count+=1
-            print(self.count)
-            if self.count >=170:
-                server.score.hero_score += 1
-                self.count = 0
+            if server.ai.state != Defence: #defence 일때는 공격 추가 안됨
+                self.count+=1
+                print(self.count)
+                if self.count >=170:
+                    server.score.hero_score += 1
+                    self.count = 0
 
             print("찌름")
             pass
