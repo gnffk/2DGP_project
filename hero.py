@@ -261,11 +261,11 @@ class Hero:
                 self.attack_up_cooldown = 0
         if self.attack_middle_cooldown > 0:
             self.attack_middle_cooldown -= game_framework.frame_time
-            if self.attack_middle_cooldown <0:
+            if self.attack_middle_cooldown < 0:
                 self.attack_middle_cooldown = 0
         if self.defence_cooldown > 0:
             self.defence_cooldown -= game_framework.frame_time
-            if self.defence_cooldown <0:
+            if self.defence_cooldown < 0:
                 self.defence_cooldown = 0
         self.state_machine.update()
 

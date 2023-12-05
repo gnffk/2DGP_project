@@ -63,20 +63,29 @@ class AI:
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
         self.bt.run()
+        print(self.defence_cooldown)
+        print(self.attack_up_cooldown)
+        print(self.attack_middle_cooldown)
+        if self.defence_cooldown > 0:
+            self.defence_cooldown -= game_framework.frame_time
+            if self.defence_cooldown < 0:
+                self.defence_cooldown = 0
+
         if self.attack_up_cooldown > 0:
             self.attack_up_cooldown -= game_framework.frame_time
-            if self.attack_up_cooldown <0:
+            if self.attack_up_cooldown < 0:
                 self.attack_up_cooldown = 0
+
         if self.attack_middle_cooldown > 0:
             self.attack_middle_cooldown -= game_framework.frame_time
             if self.attack_middle_cooldown <0:
                 self.attack_middle_cooldown = 0
-        if self.defence_cooldown > 0:
-            self.defence_cooldown -= game_framework.frame_time
-            if self.defence_cooldown <0:
-                self.defence_cooldown = 0
+
+
+
         if self.state != 'attack_up' and self.state != 'attack_middle':
             self.weapon_x= self.x - 100
+
     def draw(self):
         sx, sy = self.x - server.background.window_left, self.y - server.background.window_bottom
         image = AI.images[self.state][0]  # 가져온 이미지 리스트에서 첫 번째 이미지를 사용
@@ -126,10 +135,11 @@ class AI:
         else:
             return BehaviorTree.FAIL
         pass #c6
-    def hero_attack_condition(self):
-        if server.hero.state == 'Attack' and self.defence_cooldown == 0:
 
-            return BehaviorTree.SUCCESS
+    def hero_attack_condition(self):
+        if server.hero.state == 'Attack':
+            if self.defence_cooldown == 0:
+                return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
         pass #c7
@@ -182,7 +192,7 @@ class AI:
             return BehaviorTree.FAIL
         pass #c15
     def score_equal_conditon(self):
-        if server.score.ai_score == server.score.hero_score:
+        if server.score.ai_score == server.score.hero_score :
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -232,9 +242,9 @@ class AI:
         self.speed = RUN_SPEED_PPS
 
         if self.frame >=10.9:
+            self.defence_cooldown = 5
             self.frame = 0
             self.state = 'Idle'
-            self.defence_cooldown=5
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -272,7 +282,7 @@ class AI:
         if self.frame >= 10.9:
             self.frame = 0
             self.state = 'Idle'
-            self.attack_up_cooldown =5
+            self.attack_up_cooldown = 5
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -387,6 +397,7 @@ class AI:
 
         #&
         SEQ_EQUAL = Sequence('EQUAL', c16, SEL_DISTANCE_LESS_AND_MORE)
+        #SEQ_EQUAL = Sequence('EQUAL', c16, a5)#테스트
         #&
         ##
         SEL_SCORE_MORE_AND_LESS = Selector('SCORE_MORE_AND_LESS', SEQ_SCORE_LESS, SEQ_SCORE_MORE)
