@@ -46,10 +46,10 @@ class Score:
             self.image_num[1].clip_draw(0, 0, 1000, 1000, 660, 680, 50, 50)
         # AI
         if self.ai_score < 10:
-            self.image_num[self.ai_score].clip_draw(0, 0, 1000, 1000, 950, 680, 50, 50)
+            self.image_num[self.ai_score%10].clip_draw(0, 0, 1000, 1000, 950, 680, 50, 50)
             self.image_num[0].clip_draw(0, 0, 1000, 1000, 900, 680, 50, 50)
         elif self.hero_score < 10:
-            self.image_num[self.ai_score].clip_draw(0, 0, 1000, 1000, 950, 680, 50, 50)
+            self.image_num[self.ai_score%10].clip_draw(0, 0, 1000, 1000, 950, 680, 50, 50)
             self.image_num[1].clip_draw(0, 0, 1000, 1000, 900, 680, 50, 50)
 
         pass

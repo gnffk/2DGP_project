@@ -11,7 +11,7 @@ import server
 
 # A Run Speed
 PIXEL_PER_METER= (10.0/0.3)
-RUN_SPEED_KMPH = 30.0
+RUN_SPEED_KMPH = 20.0
 RUN_SPEED_MPM = (RUN_SPEED_KMPH*1000.0/60.0)
 RUN_SPEED_MPS = (RUN_SPEED_MPM/60.0)
 RUN_SPEED_PPS = (RUN_SPEED_MPS* PIXEL_PER_METER)
@@ -103,7 +103,7 @@ class AI:
             return BehaviorTree.FAIL
         pass #c4
     def ai_defecne_time_up_condition(self):
-        if self.defence_cooldown >=0:
+        if self.defence_cooldown >0:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -276,11 +276,11 @@ class AI:
     def handle_collision(self, group, other):
         if group == 'ai:hero':
             server.score.score_state_ai = True
-            if server.hero.state != 1: #defence 일때는 공격 추가 안됨
-                self.count+=1
+            if server.ai.state != 'defence': #defence 일때는 공격 추가 안됨
+                self.count +=1
                 #print(self.count)
                 if self.count >=170:
-                    server.score.hero_score += 1
+                    server.score.ai_score += 1
                     self.count = 0
 
             #print("찌름")
@@ -370,7 +370,7 @@ class AI:
         #*
 
         #&
-        SEQ_EQUAL = Sequence('EQUAL', c16, a5)
+        SEQ_EQUAL = Sequence('EQUAL', c16, SEL_DISTANCE_LESS_AND_MORE)
         #&
         ##
         SEL_SCORE_MORE_AND_LESS = Selector('SCORE_MORE_AND_LESS', SEQ_SCORE_LESS, SEQ_SCORE_MORE)
