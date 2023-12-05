@@ -45,7 +45,9 @@ class AI:
         self.speed = 0.0
         self.frame = 0
         self.state = 'Idle'
-
+        self.attack_up_cooldown = 0
+        self.attack_middle_cooldown = 0
+        self.defence_cooldown = 0
         self.tx, self.ty = 0, 0
         # self.build_behavior_tree()
 
@@ -76,45 +78,129 @@ class AI:
     def handle_collision(self, group, other):
         pass
 
-    def set_target_location(self, x=None, y=None):
-        if not x or not y:
-            raise ValueError('Location should be given')
-        self.tx, self.ty = x, y
-        return BehaviorTree.SUCCESS
+    def score_not_equal_condition(self):
+        if server.score.ai_score != server.score.hero_score:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c1
+    def score_less_score_condition(self):
+        if server.score.ai_score < server.score.hero_score:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c2
+    def score_not_meet_condition(self):
+        if 1:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c3
+    def score_meet_condition(self):
+        if 1:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c4
+    def ai_defecne_time_up_condition(self):
+        if self.defence_cooldown >=0:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c5
+    def ai_defecne_time_zero_condition(self):
+        if self.defence_cooldown ==0:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c6
+    def hero_attack_condition(self):
+        if 1:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c7
+    def ai_attack_time_zero_condition(self):
+        if self.attack_up_cooldown == 0 or self.attack_middle_cooldown ==0:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c8
+    def ai_one_attack_time_zero_condition(self):
+        if (self.attack_up_cooldown != 0 and self.attack_middle_cooldown ==0) or (self.attack_up_cooldown == 0 and self.attack_middle_cooldown !=0):
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c9
+    def score_more_score_condition(self):
+        if server.score.ai_score > server.score.hero_score:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c10
+    def distance_less_than(self):
+        if 1:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c11
+    def distance_more_than(self):
+        if 1:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c12
+    def score_more_score_condition(self):
+        if server.score.ai_score > server.score.hero_score:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c13
+    def hero_attack_time_zero_condition(self):
+        if server.hero.attack_up_cooldown ==0 or server.hero.attack_middle_cooldown==0:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c14
+    def hero_attack_time_zero_not_condition(self):
+        if server.hero.attack_up_cooldown !=0 or server.hero.attack_middle_cooldown!=0:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c15
+    def score_equal_conditon(self):
+        if server.score.ai_score == server.score.hero_score:
+            return BehaviorTree.SUCCESS
+        else:
+            return BehaviorTree.FAIL
+        pass #c16
 
-    def distance_less_than(self, x1, y1, x2, y2, r):
-        distance2 = (x1 - x2) ** 2 + (y1 - y2) ** 2
-        return distance2 < (PIXEL_PER_METER * r) ** 2
-
-    def move_slightly_to(self, tx, ty):
-
-        pass
-
-    def move_to(self, r=0.5):
-        self.state = 'Idle'
-        self.move_slightly_to(self.tx, self.ty)
-        if self.distance_less_than(self.tx, self.ty, self.x, self.y, r):
+    
+    def front_Move(self):
+        self.state = 'run'
+        self.frame =0
+        if se:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
+        pass #a1
 
-    def set_random_location(self):
-        # select random location around boy
-        self.tx = 1000
-        self.ty = -200
-        return BehaviorTree.SUCCESS
+
 
     def handle_collision(self, group, other):
         if group == 'ai:hero':
-
+            server.score.score_state_ai = True
+            if server.hero.state != Defence: #defence 일때는 공격 추가 안됨
+                self.count+=1
+                print(self.count)
+                if self.count >=170:
+                    server.score.hero_score += 1
+                    self.count = 0
 
             print("찌름")
             pass
 
     # def build_behavior_tree(self):
-    #     #a1 = Action('Set random location', self.set_random_location)
-    #     #a2 = Action('Move to', self.move_to)
-    #     #root = SEQ_wander = Sequence('Wander', a1, a2)
     #     c1 = Condition('점수가 안똑같음?', self.score_not_equal_condition)
     #     c2 = Condition('점수가 적음?', self.score_less_score_condition)
     #     c3 = Condition('못만남?', self.score_not_meet_condition)
