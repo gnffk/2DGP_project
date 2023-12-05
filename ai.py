@@ -175,11 +175,17 @@ class AI:
             return BehaviorTree.FAIL
         pass #c16
 
-    
+
+
+
     def front_Move(self):
-        self.state = 'run'
-        self.frame =0
-        if se:
+        if self.state != 'run':
+            self.frame = 0
+            self.state = 'run'
+        self.speed = RUN_SPEED_PPS
+        self.x -= self.speed * math.cos(self.dir) * game_framework.frame_time
+
+        if 1:
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -190,7 +196,7 @@ class AI:
     def handle_collision(self, group, other):
         if group == 'ai:hero':
             server.score.score_state_ai = True
-            if server.hero.state != Defence: #defence 일때는 공격 추가 안됨
+            if server.hero.state != 1: #defence 일때는 공격 추가 안됨
                 self.count+=1
                 print(self.count)
                 if self.count >=170:

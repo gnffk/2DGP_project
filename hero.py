@@ -94,6 +94,8 @@ class Attack_up:
                 hero.attack_up_cooldown =5
                 print('end')
                 hero.state_machine.handle_event(('NONE', 0))
+        else:
+            hero.state_machine.handle_event(('NONE', 0))
         pass
 
     @staticmethod
@@ -129,7 +131,8 @@ class Attack_middle:
                 print('end')
                 hero.state_machine.handle_event(('NONE', 0))
             pass
-
+        else:
+            hero.state_machine.handle_event(('NONE', 0))
     @staticmethod
     def draw(hero):
         hero.image_attack_middle.clip_composite_draw(int(hero.frame) * 500, 0 * 348, 500, 348, 0, 'h', hero.x, hero.y,500,348)
@@ -152,9 +155,11 @@ class Defence:
                          * game_framework.frame_time) % 11
 
             if hero.frame >=10.8:
-                hero.defence_cooldown =5
+                hero.defence_cooldown = 5
                 print('end')
                 hero.state_machine.handle_event(('NONE', 0))
+        else:
+            hero.state_machine.handle_event(('NONE', 0))
         pass
 
     @staticmethod
@@ -246,11 +251,16 @@ class Hero:
     def update(self):
         if self.attack_up_cooldown > 0:
             self.attack_up_cooldown -= game_framework.frame_time
+            if self.attack_up_cooldown <0:
+                self.attack_up_cooldown = 0
         if self.attack_middle_cooldown > 0:
             self.attack_middle_cooldown -= game_framework.frame_time
+            if self.attack_middle_cooldown <0:
+                self.attack_middle_cooldown = 0
         if self.defence_cooldown > 0:
             self.defence_cooldown -= game_framework.frame_time
-            return
+            if self.defence_cooldown <0:
+                self.defence_cooldown = 0
         self.state_machine.update()
 
     def draw(self):
