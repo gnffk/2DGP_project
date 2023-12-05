@@ -126,7 +126,7 @@ class Attack_middle:
     @staticmethod
     def do(hero):
         if hero.attack_middle_cooldown == 0:
-            hero.state = 'ATTACK'
+            hero.state = 'Attack'
             hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                           * game_framework.frame_time) % 11
 
@@ -167,7 +167,7 @@ class Defence:
     @staticmethod
     def do(hero):
         if hero.defence_cooldown == 0:
-            hero.state = 'DEFENCE'
+            hero.state = 'defence'
             hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                           * game_framework.frame_time) % 11
 

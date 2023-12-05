@@ -1,7 +1,7 @@
 from pico2d import load_image
 import game_world
 import game_framework
-
+import hero_score_mode
 
 class Score:
     def image_load(self):
@@ -15,6 +15,7 @@ class Score:
         self.image_num[7] = load_image("resource/score/score_number(7).png")
         self.image_num[8] = load_image("resource/score/score_number(8).png")
         self.image_num[9] = load_image("resource/score/score_number(9).png")
+
 
     def __init__(self):
         self.image_num = {}
@@ -58,14 +59,19 @@ class Score:
     def update(self):
         if self.score_state_hero:
             self.score_timer_hero += game_framework.frame_time
+            game_framework.push_mode(hero_score_mode)
             if self.score_timer_hero >= self.score_duration:
                 self.score_state_hero = False
                 self.score_timer_hero = 0
+
+
 
         if self.score_state_ai:
             self.score_timer_ai += game_framework.frame_time
             if self.score_timer_ai >= self.score_duration:
                 self.score_state_ai = False
                 self.score_timer_ai = 0
+
+
 
         pass
