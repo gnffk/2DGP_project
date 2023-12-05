@@ -27,6 +27,7 @@ class BehaviorTree:
         self.root.tag_condition()
 
     def run(self):
+        print('\n========================================== NEW TICK =======================================================')
         self.root.run()
         if self.root.value == BehaviorTree.SUCCESS:
             self.root.reset()
@@ -43,14 +44,10 @@ class Node:
     def show_result(f):
         def inner(self):
             result = f(self)
-            # end = '....' if result == BehaviorTree.RUNNING else '\n'
-            end = '\n'
-            color = '\033[2;31;43m' if BehaviorTree.run_mode == 'MONITOR' else '\033[0;37;40m'
-            print(color + f'[{self.__class__.__name__:10s}] {self.name:40s} ==> ({result})', end = end)
+            print(f'[{self.__class__.__name__:10s}] {self.name:40s} ==> ({result})')
             return result
 
-        # return inner
-        return f
+        return inner
 
 
 class Selector(Node):
@@ -90,14 +87,6 @@ class Selector(Node):
 
         self.value = BehaviorTree.FAIL
         return self.value
-
-
-
-
-
-
-
-
 
 
 class Sequence(Node):

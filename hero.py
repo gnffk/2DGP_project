@@ -44,8 +44,6 @@ ACTION_PER_TIME = 1.0 / TIME_PER_ACTION
 FRAMES_PER_ACTION = 11
 
 
-
-
 class Idle:
     @staticmethod
     def enter(hero, e):
@@ -71,7 +69,7 @@ class Attack_up:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
-        
+        hero.state = 'Attack'
         #(e)
         pass
 
@@ -93,6 +91,7 @@ class Attack_up:
             if hero.frame >=10.9:
                 hero.attack_up_cooldown =5
                 print('end')
+                hero.state = 'Idle'
                 hero.state_machine.handle_event(('NONE', 0))
         else:
             hero.state_machine.handle_event(('NONE', 0))
@@ -106,6 +105,7 @@ class Attack_middle:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
+        hero.state = 'Attack'
         #print(e)
         pass
 
@@ -129,6 +129,7 @@ class Attack_middle:
             if hero.frame >=10.8:
                 hero.attack_middle_cooldown =5
                 print('end')
+                hero.state = 'Idle'
                 hero.state_machine.handle_event(('NONE', 0))
             pass
         else:
@@ -244,9 +245,10 @@ class Hero:
         self.attack_up_cooldown = 0
         self.attack_middle_cooldown = 0
         self.defence_cooldown = 0
+        self.state = 'IDLE'
 
     def handle_event(self, event):
-        print(event)
+        #print(event)
         self.state_machine.handle_event(('INPUT', event))
     def update(self):
         if self.attack_up_cooldown > 0:
@@ -267,7 +269,10 @@ class Hero:
         self.state_machine.draw()
         draw_rectangle(*self.get_bb())
         draw_rectangle(*self.get_aa())
-
+        #print(server.ai.x - self.x)
+        if server.ai.x - self.x<100:
+            self.x = server.ai.x-100
+            self.weapon_x= self.x +90
     def get_bb(self):
         return self.x - 120, self.y - 100, self.x-30 , self.y+90
     def get_aa(self):
@@ -278,10 +283,10 @@ class Hero:
             server.score.score_state_hero = True
             if server.ai.state != Defence: #defence 일때는 공격 추가 안됨
                 self.count+=1
-                print(self.count)
+                #print(self.count)
                 if self.count >=170:
                     server.score.hero_score += 1
                     self.count = 0
 
-            print("찌름")
+            #print("찌름")
             pass

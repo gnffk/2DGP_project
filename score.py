@@ -36,7 +36,7 @@ class Score:
             self.image.clip_draw(0, 0, 217, 65, 685, 730, 217/2, 65/2)
 
         if self.score_state_ai:
-            s;elf.image.clip_draw(583, 0, 800, 65, 925, 730, 217/2, 65/2)
+            self.image.clip_draw(583, 0, 800, 65, 925, 730, 217/2, 65/2)
         # hero
         if self.hero_score < 10:
             self.image_num[self.hero_score%10].clip_draw( 0,0, 1000, 1000,710,680,50,50)
