@@ -37,7 +37,7 @@ class AI:
     def __init__(self):
         self.x = 950
         self.y = 150
-        self.weapon_x, self.weapon_y = 830, 230
+        self.weapon_x, self.weapon_y = 850, 230
         self.size_x = 500
         self.size_y = 348
         self.load_images()
@@ -51,6 +51,9 @@ class AI:
         self.tx, self.ty = 0, 0
         self.build_behavior_tree()
         self.count = 0
+        self.collision_checked = False
+        self.score_incremented = False  # 초기화
+
     def get_bb(self):
         return self.x+30 , self.y-100, self.x + 120 , self.y + 90 #충돌 박스 크기 x = 90 / y = 190
 
@@ -60,7 +63,20 @@ class AI:
     def update(self):
         self.frame = (self.frame + FRAMES_PER_ACTION * ACTION_PER_TIME * game_framework.frame_time) % FRAMES_PER_ACTION
         self.bt.run()
-
+        if self.attack_up_cooldown > 0:
+            self.attack_up_cooldown -= game_framework.frame_time
+            if self.attack_up_cooldown <0:
+                self.attack_up_cooldown = 0
+        if self.attack_middle_cooldown > 0:
+            self.attack_middle_cooldown -= game_framework.frame_time
+            if self.attack_middle_cooldown <0:
+                self.attack_middle_cooldown = 0
+        if self.defence_cooldown > 0:
+            self.defence_cooldown -= game_framework.frame_time
+            if self.defence_cooldown <0:
+                self.defence_cooldown = 0
+        if self.state != 'attack_up' and self.state != 'attack_middle':
+            self.weapon_x= self.x - 100
     def draw(self):
         sx, sy = self.x - server.background.window_left, self.y - server.background.window_bottom
         image = AI.images[self.state][0]  # 가져온 이미지 리스트에서 첫 번째 이미지를 사용
@@ -70,14 +86,10 @@ class AI:
         draw_rectangle(*self.get_aa())
         if self.x- server.hero.x<100:
             self.x = server.hero.x+100
-            self.weapon_x= self.x -120
+            self.weapon_x= self.x -100
 
     def handle_event(self, event):
         pass
-
-    def handle_collision(self, group, other):
-        pass
-
     def score_not_equal_condition(self):
         if server.score.ai_score != server.score.hero_score:
             return BehaviorTree.SUCCESS
@@ -115,7 +127,8 @@ class AI:
             return BehaviorTree.FAIL
         pass #c6
     def hero_attack_condition(self):
-        if server.hero.state == 'Attack':
+        if server.hero.state == 'Attack' and self.defence_cooldown == 0:
+
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.FAIL
@@ -221,14 +234,15 @@ class AI:
         if self.frame >=10.9:
             self.frame = 0
             self.state = 'Idle'
+            self.defence_cooldown=5
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
         pass #a3
     def middle_attack(self):
-        if self.state != 'middle_attack':
+        if self.state != 'attack_middle':
             self.frame = 0
-            self.state = 'middle_attack'
+            self.state = 'attack_middle'
         self.speed = RUN_SPEED_PPS
         if self.frame <= 5.5:
             self.weapon_x -= RUN_SPEED_PPS * game_framework.frame_time / 2
@@ -238,6 +252,7 @@ class AI:
             self.weapon_y += RUN_SPEED_PPS * game_framework.frame_time / 2
 
         if self.frame >= 10.9:
+            self.attack_middle_cooldown = 5
             self.frame = 0
             self.state = 'Idle'
             return BehaviorTree.SUCCESS
@@ -257,6 +272,7 @@ class AI:
         if self.frame >= 10.9:
             self.frame = 0
             self.state = 'Idle'
+            self.attack_up_cooldown =5
             return BehaviorTree.SUCCESS
         else:
             return BehaviorTree.RUNNING
@@ -275,11 +291,11 @@ class AI:
         pass  # a6
     def handle_collision(self, group, other):
         if group == 'ai:hero':
-            server.score.score_state_ai = True
-            if server.ai.state != 'defence': #defence 일때는 공격 추가 안됨
+            if server.hero.state != 'defence': #defence 일때는 공격 추가 안됨
+                server.score.score_state_ai = True
                 self.count +=1
                 #print(self.count)
-                if self.count >=170:
+                if self.count >=90:
                     server.score.ai_score += 1
                     self.count = 0
 

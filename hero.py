@@ -69,7 +69,6 @@ class Attack_up:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
-        hero.state = 'Attack'
         #(e)
         pass
 
@@ -81,6 +80,7 @@ class Attack_up:
     @staticmethod
     def do(hero):
         if hero.attack_up_cooldown ==0:
+            hero.state = 'Attack'
             hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                      * game_framework.frame_time) % 11
             if hero.frame<=5.5:
@@ -105,7 +105,7 @@ class Attack_middle:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
-        hero.state = 'Attack'
+
         #print(e)
         pass
 
@@ -117,6 +117,7 @@ class Attack_middle:
     @staticmethod
     def do(hero):
         if hero.attack_middle_cooldown == 0:
+            hero.state = 'Attack'
             hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                          * game_framework.frame_time) % 11
             if hero.frame<=5.5:
@@ -141,6 +142,7 @@ class Defence:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
+
         #print(e)
         pass 
 
@@ -152,12 +154,14 @@ class Defence:
     @staticmethod
     def do(hero):
         if hero.defence_cooldown ==0:
+            hero.state = 'defence'
             hero.frame = (hero.frame + FRAMES_PER_ACTION * ACTION_PER_TIME
                          * game_framework.frame_time) % 11
 
             if hero.frame >=10.8:
                 hero.defence_cooldown = 5
                 print('end')
+                hero.state = 'Idle'
                 hero.state_machine.handle_event(('NONE', 0))
         else:
             hero.state_machine.handle_event(('NONE', 0))
@@ -280,8 +284,8 @@ class Hero:
 
     def handle_collision(self, group, other):
         if group == 'hero:ai':
-            server.score.score_state_hero = True
-            if server.ai.state != Defence: #defence 일때는 공격 추가 안됨
+            if server.ai.state != 'defence': #defence 일때는 공격 추가 안됨
+                server.score.score_state_hero = True
                 self.count+=1
                 #print(self.count)
                 if self.count >=170:
