@@ -2,12 +2,18 @@ from pico2d import *
 import game_framework
 import play_mode
 def init():
-     global image
+     global image, bgm
      image = load_image('resource/title.png')
+     bgm = load_music('music/title_mode.mp3')
+     bgm.set_volume(32)
+     bgm.repeat_play()
+
+
 def update():
     pass
 def finish():
      global image
+     bgm.stop()
      del image
 def handle_events():
      events = get_events()
