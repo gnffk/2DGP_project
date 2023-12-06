@@ -8,9 +8,12 @@ import game_world
 
 def init():
     global image, alpha
+    global bgm
     image = load_image('resource/mood/001.png')
     alpha = 0.0  # 초기 투명도
-
+    bgm = load_music('resource/music/lose_mood.mp3')
+    bgm.set_volume(50)
+    bgm.repeat_play()
 
 def update():
     global alpha
@@ -24,6 +27,7 @@ def finish():
     server.hero = None
     server.ai = None
     game_world.clear()
+    bgm.stop()
     del image
 
 

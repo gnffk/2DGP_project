@@ -1,4 +1,4 @@
-from pico2d import load_image
+from pico2d import load_image, load_music
 import game_world
 import game_framework
 import hero_score_mode
@@ -33,6 +33,10 @@ class Score:
         self.score_duration = 2.0
         self.ai_score, self.hero_score = 0, 0
 
+        self.bgm_win= load_music('resource/music/win.mp3')
+        self.bgm_win.set_volume(50)
+
+
     def draw(self):
 
         self.image.clip_draw(0, 65, 800, 379, self.x, self.y, 400, 314 / 2)
@@ -60,9 +64,11 @@ class Score:
         if self.hero_score ==11 and self.ai_score != 11:
             self.hero_score, self.ai_score = 0 , 0
             self.real_score_hero +=1
+            self.bgm_win.play(1)
         elif self.hero_score !=11 and self.ai_score == 11:
             self.hero_score, self.ai_score = 0, 0
             self.real_score_ai += 1
+            self.bgm_win.play(1)
 
         self.image_num[self.real_score_hero % 10].clip_draw(0, 0, 1000, 1000, 780, 680, 20, 20)
         self.image_num[self.real_score_ai % 10].clip_draw(0, 0, 1000, 1000, 830, 680, 20, 20)

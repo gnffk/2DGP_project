@@ -4,8 +4,8 @@ import play_mode
 def init():
      global image, bgm
      image = load_image('resource/title.png')
-     bgm = load_music('music/title_mode.mp3')
-     bgm.set_volume(32)
+     bgm = load_music('resource/music/title_mode.mp3')
+     bgm.set_volume(50)
      bgm.repeat_play()
 
 

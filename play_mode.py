@@ -48,7 +48,10 @@ def init():
 
     game_world.add_collision_pair('hero:ai', server.hero, None)
     game_world.add_collision_pair('hero:ai', None, server.ai)
-
+    global bgm
+    bgm = load_music('resource/music/play_mode.mp3')
+    bgm.set_volume(50)
+    bgm.repeat_play()
 
 def update():
     global turn
@@ -72,6 +75,7 @@ def draw():
 
 
 def finish():
+    bgm.stop()
     game_world.clear()
 
 

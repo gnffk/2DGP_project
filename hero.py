@@ -1,4 +1,5 @@
-from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, draw_rectangle
+from pico2d import get_time, load_image, SDL_KEYDOWN, SDL_KEYUP, SDLK_SPACE, SDLK_LEFT, SDLK_RIGHT, draw_rectangle, \
+    load_music
 
 from score import Score
 from sdl2 import SDLK_a, SDL_Event, SDLK_s, SDLK_d
@@ -74,6 +75,7 @@ class Attack_up:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
+        hero.bgm_attack.play(1)
         # (e)
         pass
 
@@ -114,7 +116,7 @@ class Attack_middle:
     @staticmethod
     def enter(hero, e):
         hero.frame = 0
-
+        hero.bgm_attack.play(1)
         # print(e)
         pass
 
@@ -275,7 +277,13 @@ class Hero:
         self.attack_middle_cooldown = 0
         self.defence_cooldown = 0
         self.state = 'IDLE'
+        self.bgm_hit = load_music('resource/music/hit.mp3')
+        self.bgm_hit.set_volume(50)
+        self.bgm_attack = load_music('resource/music/attack.mp3')
+        self.bgm_attack.set_volume(50)
 
+        self.bgm_score = load_music('resource/music/score_up.mp3')
+        self.bgm_score.set_volume(50)
     def handle_event(self, event):
         # print(event)
         self.state_machine.handle_event(('INPUT', event))
@@ -321,6 +329,7 @@ class Hero:
     def handle_collision(self, group, other):
         if group == 'hero:ai':
             if server.ai.state != 'defence':  # defence 일때는 공격 추가 안됨
+                self.bgm_score.play(1)
                 server.score.score_state_hero = True
                 server.score.hero_score += 1
                 self.x = server.ai.x - 100

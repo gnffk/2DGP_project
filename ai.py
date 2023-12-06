@@ -47,6 +47,9 @@ class AI:
         self.tx, self.ty = 0, 0
         self.build_behavior_tree()
         self.count = 0
+
+
+
     def get_bb(self):
         return self.x + 30, self.y - 100, self.x + 110, self.y + 90 #충돌 박스 크기 x = 90 / y = 190
     def get_aa(self):
@@ -69,8 +72,7 @@ class AI:
             self.weapon_y = self.y + 80
     def handle_event(self, event):
         pass
-    def handle_collision(self, group, other):
-        pass
+
     def score_not_equal_condition(self):
         if server.score.ai_score != server.score.hero_score:
             return BehaviorTree.SUCCESS
@@ -273,6 +275,8 @@ class AI:
     def handle_collision(self, group, other):
         if group == 'ai:hero':
             if server.hero.state != 'defence': #defence 일때는 공격 추가 안됨
+
+
                 server.score.score_state_ai = True
                 server.score.ai_score += 1
                 self.x = server.hero.x + 100

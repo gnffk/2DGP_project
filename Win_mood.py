@@ -7,10 +7,12 @@ import title_mode
 
 
 def init():
-    global image, alpha
+    global image, alpha,bgm
     image = load_image('resource/mood/002.png')
     alpha = 0.0  # 초기 투명도
-
+    bgm = load_music('resource/music/win_mood.mp3')
+    bgm.set_volume(50)
+    bgm.repeat_play()
 def update():
     global alpha
     alpha += 0.001  # 적절한 값으로 조절
@@ -21,6 +23,7 @@ def finish():
     global image
     server.hero = None
     server.ai = None
+    bgm.stop()
     game_world.clear()
     del image
 
