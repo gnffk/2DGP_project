@@ -2,6 +2,7 @@ from pico2d import *
 
 import game_framework
 import game_world
+import hero_score_mode
 from hero import Hero
 from ai import AI
 from score import Score
@@ -45,6 +46,8 @@ def init():
     game_world.add_collision_pair('hero:ai', None, server.ai)
 
 def update():
+    if server.score.score_state_hero == True or server.score.score_state_ai == True:
+        game_framework.push_mode(hero_score_mode)
     game_world.update()
     game_world.handle_collisions()
 def draw():
@@ -61,5 +64,4 @@ def pause():
 
     pass
 def resume():
-    hero.wait_time = get_time()
     pass

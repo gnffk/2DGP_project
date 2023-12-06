@@ -42,8 +42,15 @@ def init():
     score_mode_start_time = get_time()
 def update():
     global score_mode_start_time
-    if get_time() - score_mode_start_time >= 3.0:
+    if get_time() - score_mode_start_time >= 4.0:
         score_mode_start_time = get_time()
+        server.hero.x, server.hero.y = 600, 150
+        server.hero.weapon_x, server.hero.weapon_y = 700, 230
+
+        server.ai.x = 980
+        server.ai.y = 150
+        server.ai.weapon_x, server.ai.weapon_y = 850, 230
+
         game_framework.pop_mode()
     game_world.update()
 def draw():

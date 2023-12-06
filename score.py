@@ -59,7 +59,6 @@ class Score:
     def update(self):
         if self.score_state_hero:
             self.score_timer_hero += game_framework.frame_time
-            game_framework.push_mode(hero_score_mode)
             if self.score_timer_hero >= self.score_duration:
                 self.score_state_hero = False
                 self.score_timer_hero = 0
